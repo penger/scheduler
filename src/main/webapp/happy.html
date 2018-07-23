@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="http://echarts.baidu.com/dist/echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+<!--
+<div id="main4" style="width: 1600px;height:300px;"></div>
+-->
+
+<!--
+	<button onclick="one()">1</button>
+
+	    //贷款总额
+        var dkze=55*10000
+        //贷款利息
+        var dkll=4.9*(1+0.1)/100
+        //月利率
+        var yll=dkll/12
+        //月份
+        var yf=30*12
+        //剩余未还款
+        var sy=dkze
+        //当月利息
+-->
+<table>
+    <tr>
+        <td>贷款总额</td>
+        <td><input type="text" id="dkze" value="550000"></td>
+    </tr>
+    <tr>
+        <td>基准利率</td>
+        <td><input type="text" id="jzll" value="4.9"></td>
+    </tr>
+    <tr>
+        <td>上浮或下调百分比</td>
+        <td><input type="text" id="fd" value="0.1"></td>
+    </tr>
+    <tr>
+        <td>选择年数</td>
+        <td><input type="text" id="nian" value="30"></td>
+    </tr>
+</table>
+<button onclick="refresh()">点击重新生成图表</button>
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="a" style="float: left;width: 800px;">
+    <div id="main" style="width: 800px;height:200px;float: left"></div>
+</div>
+<div id= "b" style="float: right;width: 300px">
+    <div id="message" style="color: red ;float:right;height: 200px"></div>
+</div>
+<script type="text/javascript">
+
+    var dkze=$("#dkze").val()
+    var jzll=$("#jzll").val()
+    var fd=$("#fd").val()
+    var nian=$("#nian").val()
+    var mainid="main"
+    var me="message"
+
+
+    function refresh() {
+        dkze=$("#dkze").val()
+        jzll=$("#jzll").val()
+        fd=$("#fd").val()
+        nian=$("#nian").val()
+
+        appendRandomDiv()
+
+        console.log("mainid = "+mainid)
+        console.log("贷款总额："+dkze+" 基准利率："+jzll+" 浮动："+fd+" 年数："+nian)
+
+        calcLoans()
+
+    }
+
+
+    function calcLoans(){
+
+
+        var info = "贷款总额："+dkze+" 基准利率："+jzll+" 浮动："+fd+" 年数："+nian
+        console.log("in function:"+info)
+        var myChart=null
+        var annian=false
+        var lxlist=new Array()
+        var yflist=new Array()
+        var yelist=new Array()
+        var bjlist=new Array()
+        var hkze=0
+
+        //贷款利息
+        var dkll=jzll*(1+parseFloat(fd))/100
+//        alert(dkll)
+        //月利率
+        var yll=dkll/12
+        //月份
+        var yf=nian*12
+        //剩余未还款
+        var sy=dkze
+        //当月利息
+        var lx=0
+        l=0;			s=0;			b=0;
+        var t=0;
+        for(var i=1;i<=yf;i++){
+            //月还款
+            var yhk=(dkze*yll*((1+yll)**yf))/((1+yll)**yf-1)
+
+            hkze=hkze+yhk
+            //当月还利息
+            lx=sy*yll
+            t=t+lx
+            //当月还本金
+            bj=yhk-lx
+            //剩余未还款
+            sy=sy-(yhk-lx)
+            l=l+lx;s=s+sy;b=b+bj;
+            //数据整合为数组
+            if(annian){
+                if(i%12==0){
+                    lxlist.push(parseInt(l))
+                    yelist.push(parseInt(sy))
+                    bjlist.push(parseInt(b))
+                    yflist.push(""+(i/12)+"年")
+                    l=0;			s=0;			b=0;
+                }
+            }else{
+                lxlist.push(parseInt(lx))
+                yelist.push(parseInt(sy))
+                bjlist.push(parseInt(bj))
+                yflist.push(""+(i)+"月")
+            }
+        }
+        //debugger
+        info+="<br/>月还款："+parseInt(yhk)
+        info+="<br/>总还款："+parseInt(hkze)
+//        console.log("利息总额 上浮10%:"+hkze)
+
+        // 基于准备好的dom，初始化echarts实例
+        debugger
+        myChart = echarts.init(document.getElementById(mainid));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: dkze+" "+jzll+" "+fd+" "+nian
+            },
+            tooltip: {},
+                legend: {
+                data:['余额','利息','本金'],
+                    selected:{
+                    '余额':false
+                    }
+            },
+            xAxis: {
+                data:yflist
+            },
+            yAxis: {},
+            series: [{
+                name: '余额',
+                type: 'bar',
+                data: yelist
+            },{
+                name: '利息',
+                type: 'bar',
+                data: lxlist
+            },{
+                name: '本金',
+                type: 'bar',
+                data: bjlist
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option)
+
+//        alert(info)
+        $("#"+me).append(info+"<br/>")
+
+    }
+    function appendRandomDiv() {
+        var x=100000;
+        var y=1;
+        var rand=parseInt(Math.random()*(x-y+1)+y)
+        rand="main"+rand
+        me="message"+rand
+        $("#a").append("<div id='"+rand+"' style='width: 800px;height:200px;float: left'>"+rand+"</div>")
+        $("#b").append("<div id='"+me+"' style='color: red ;float:right;height: 200px'></div>")
+        mainid = rand
+    }
+    calcLoans();
+
+</script>
+
+
+</body>
+</html>

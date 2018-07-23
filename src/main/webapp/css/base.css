@@ -1,0 +1,13 @@
+
+/*body*/
+/*{*/
+	/*background: #00FF00 url(bg2.jpg) ;*/
+/*}*/
+
+table{border:0;margin:30px ;margin-left:20px;border-collapse:collapse;border-spacing:0;}
+table th{background: #b6c2d7;font-weight:normal;line-height:30px;font-size:14px;color: #000000;}
+/*table tr:nth-child(odd){background:#F4F4F4;}*/
+/*table td:nth-child(even){color: #cc780a;}*/
+/*table tr:nth-child(5){background:#73B1E0;color:#FFF;}*/
+table tr:hover{background:#73B1E0;color:#FFF;}
+table td,table th{border:1px solid #000;}

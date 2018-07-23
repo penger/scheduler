@@ -1,0 +1,78 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>权重篇 1.0 气泡图</title>
+	<style>
+	.bubble circle{
+		stroke: black;
+		stroke-width: 2px;
+	}
+
+	.bubble text{
+		fill: black;
+		font-size: 14px;
+		font-family: arial;
+		text-anchor: middle;
+	}
+
+	</style>
+</head> 
+<body>
+<script src="./js/d3.v4.js" charset="utf-8"></script>  
+<script>
+	var width  = 1200;	//SVG绘制区域的宽度
+	var height = 800;	//SVG绘制区域的高度
+			
+	var svg = d3.select("body")			//选择<body>
+			.append("svg")			//在<body>中添加<svg>
+			.attr("width", width)	//设定<svg>的宽度属性
+			.attr("height", height);
+	
+	var pack = d3.layout.pack()
+	    	.size([ width, height ])
+	    	.sort(null)
+	    	.value(function(d){
+	    		return d.weight;
+	    	})
+		.padding(2);
+	
+	d3.json("data.json",function(error, root){
+
+		var nodes = pack.nodes(root);
+		
+		console.log(nodes);
+			
+		var color = d3.scale.category20c();
+
+		var bubbles = svg.selectAll(".bubble")
+			.data(nodes.filter(function(d) { 
+				return !d.children; 
+			}))
+			.enter()
+			.append("g")
+			.attr("class","bubble");
+
+		bubbles.append("circle")
+			.style("fill",function(d,i){
+				return color(i);
+			})
+			.attr("cx",function(d){ return d.x; })
+			.attr("cy",function(d){ return d.y; })
+			.attr("r",function(d){ return d.r; });
+
+		bubbles.append("text")
+			.attr("x",function(d){ return d.x; })
+			.attr("y",function(d){ return d.y; })
+			.text(function(d){
+				return d.name;
+			});
+
+	});
+
+
+		
+		
+</script>
+	
+</body>  
+</html>  

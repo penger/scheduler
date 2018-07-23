@@ -1,0 +1,74 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>权重篇 1.0 气泡图</title>
+
+</head> 
+<body>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+<script>
+	var nodes = [ { name: "桂林" , color:"red"}, { name: "广州" ,color:"red" },
+	              { name: "厦门",color:"red" }, { name: "杭州",color:"red" },
+	              { name: "上海" ,color:"blue" }, { name: "青岛" ,color:"red"},
+	              { name: "天津" ,color:"red" } ];
+	var edges = [ { source : 0 , target: 1 } , { source : 0 , target: 2 } ,
+	               { source : 0 , target: 3 } , { source : 1 , target: 4 } ,
+	               { source : 1 , target: 5 } , { source : 1 , target: 6 } ];
+	               
+	               
+	var width=1000;
+	var height=800;
+	
+	var svg=d3.select("body").append("svg")
+			  .attr("width",width)
+			  .attr("height",height)
+			  
+	var force=d3.layout.force()
+				.nodes(nodes)
+				.size([width,height])
+				.linkDistance(200)
+				.charge(-700);
+	force.start();
+	
+	console.log(nodes);
+	console.log(edges);
+	
+	var color=d3.scale.category20();
+	
+	//添加节点
+	var svg_nodes = svg.selectAll("circle").data(nodes)
+					   .enter()
+					   .append("circle")
+					   .attr("r",20)
+					   .style("fill",function(d,i){
+						   return d.color;
+						   //return color(i);
+					   })
+					   .call(force.drag);
+	//添加描述节点的文字
+	var svg_texts = svg.selectAll("text")
+						.data(nodes)
+						.enter()
+						.append("text")
+						.style("fill",function(d,i){
+							return color(i);
+						})
+						.attr("dx",20)
+						.attr("dy",0)
+						.text(function(d){
+							return d.name;
+						});
+	
+	force.on("tick",function(){
+		//更新节点坐标
+		svg_nodes.attr("cx",function(d){return d.x;})
+				.attr("cy",function(d){return d.y;});
+		//更新文字坐标
+		svg_texts.attr("x",function(d){return d.x;})
+				 .attr("y",function(d){return d.y;});
+	});
+	
+	
+</script>
+</body>  
+</html>  
